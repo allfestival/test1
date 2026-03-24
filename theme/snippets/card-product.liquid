@@ -1,0 +1,13 @@
+<article class="card-product">
+  <a href="{{ product.url }}">
+    {% if product.featured_image %}
+      {{ product.featured_image | image_url: width: 720 | image_tag: loading: 'lazy', widths: '240,360,540,720' }}
+    {% endif %}
+    <h3>{{ product.title }}</h3>
+    <p>{{ product.price | money }}</p>
+  </a>
+  <form method="post" action="/cart/add">
+    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+    <button class="button button--ghost" type="submit">Quick add</button>
+  </form>
+</article>

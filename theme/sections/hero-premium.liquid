@@ -1,0 +1,68 @@
+<section class="hero-premium" style="--hero-overlay: {{ section.settings.overlay_opacity | divided_by: 100.0 }}; --hero-text: {{ section.settings.text_color }};">
+  <div class="hero-premium__media">
+    {% if section.settings.hero_video != blank %}
+      {{ section.settings.hero_video | video_tag: autoplay: true, loop: true, muted: true, controls: false, image_size: '1600x', class: 'hero-premium__video' }}
+    {% elsif section.settings.hero_image != blank %}
+      {{ section.settings.hero_image | image_url: width: 2200 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '640,960,1200,1600,2200', sizes: '100vw', class: 'hero-premium__image' }}
+    {% else %}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'hero-premium__placeholder' }}
+    {% endif %}
+  </div>
+
+  <div class="hero-premium__overlay"></div>
+
+  <div class="page-width hero-premium__content hero-premium__content--{{ section.settings.content_position }}">
+    {% if section.settings.kicker != blank %}<p class="hero-kicker">{{ section.settings.kicker }}</p>{% endif %}
+    <h1>{{ section.settings.heading }}</h1>
+    {% if section.settings.subheading != blank %}<p class="hero-subheading">{{ section.settings.subheading }}</p>{% endif %}
+
+    <div class="hero-premium__cta">
+      {% if section.settings.primary_cta_label != blank %}
+        <a href="{{ section.settings.primary_cta_link }}" class="button button--primary">{{ section.settings.primary_cta_label }}</a>
+      {% endif %}
+      {% if section.settings.secondary_cta_label != blank %}
+        <a href="{{ section.settings.secondary_cta_link }}" class="button button--ghost">{{ section.settings.secondary_cta_label }}</a>
+      {% endif %}
+    </div>
+
+    {% if section.settings.show_offer_badge and section.settings.offer_badge_text != blank %}
+      <p class="hero-offer-badge">{{ section.settings.offer_badge_text }}</p>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero premium",
+  "tag": "section",
+  "class": "section-hero-premium",
+  "settings": [
+    { "type": "image_picker", "id": "hero_image", "label": "Hero image" },
+    { "type": "video", "id": "hero_video", "label": "Hero video" },
+    { "type": "text", "id": "kicker", "label": "Kicker", "default": "New launch" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Premium skincare for Indian weather" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Clinical actives, visible results, and a luxurious routine that fits your life." },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Content position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#ffffff" },
+    { "type": "range", "id": "overlay_opacity", "label": "Overlay opacity", "min": 0, "max": 90, "step": 5, "unit": "%", "default": 35 },
+    { "type": "text", "id": "primary_cta_label", "label": "Primary CTA label", "default": "Shop best sellers" },
+    { "type": "url", "id": "primary_cta_link", "label": "Primary CTA link" },
+    { "type": "text", "id": "secondary_cta_label", "label": "Secondary CTA label", "default": "Take the skin quiz" },
+    { "type": "url", "id": "secondary_cta_link", "label": "Secondary CTA link" },
+    { "type": "checkbox", "id": "show_offer_badge", "label": "Show offer badge", "default": true },
+    { "type": "text", "id": "offer_badge_text", "label": "Offer badge text", "default": "Use PREPAID10 for extra 10% off prepaid orders" }
+  ],
+  "presets": [
+    { "name": "Hero premium" }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,148 @@
+{% liquid
+  assign logo_position = section.settings.logo_position
+  assign sticky = section.settings.enable_sticky
+%}
+
+{% if section.settings.show_announcement and section.settings.announcement_text != blank %}
+  <div class="announcement-bar" style="--announcement-bg: {{ section.settings.announcement_bg }}; --announcement-color: {{ section.settings.announcement_color }};">
+    <div class="page-width">
+      <p>{{ section.settings.announcement_text }}</p>
+    </div>
+  </div>
+{% endif %}
+
+<header class="site-header {% if sticky %}site-header--sticky{% endif %}" data-section-id="{{ section.id }}">
+  <div class="page-width">
+    <div class="header-grid header-grid--{{ logo_position }}">
+      <button class="icon-button mobile-only" type="button" aria-expanded="false" data-nav-toggle>
+        <span class="visually-hidden">{{ 'general.navigation.menu' | t }}</span>
+        ☰
+      </button>
+
+      <a class="header-logo" href="{{ routes.root_url }}" aria-label="{{ shop.name }}">
+        {% if section.settings.logo != blank %}
+          {{ section.settings.logo | image_url: width: 280 | image_tag: widths: '120,180,240,280', loading: 'eager', class: 'logo-img' }}
+        {% else %}
+          <span>{{ shop.name }}</span>
+        {% endif %}
+      </a>
+
+      <nav class="header-nav" aria-label="Primary">
+        <ul class="header-menu" role="list">
+          {% for link in section.settings.menu.links %}
+            <li>
+              {% assign mega_block = section.blocks | where: 'settings.menu_item', link.title | first %}
+              {% if mega_block != blank %}
+                <details class="mega-menu">
+                  <summary>{{ link.title }}</summary>
+                  <div class="mega-menu__panel">
+                    <div>
+                      {% for childlink in link.links %}
+                        <a href="{{ childlink.url }}">{{ childlink.title }}</a>
+                      {% endfor %}
+                    </div>
+                    {% if mega_block.settings.featured_image != blank %}
+                      <a href="{{ mega_block.settings.featured_link }}" class="mega-menu__feature">
+                        {{ mega_block.settings.featured_image | image_url: width: 720 | image_tag: loading: 'lazy' }}
+                        <span>{{ mega_block.settings.featured_text }}</span>
+                      </a>
+                    {% endif %}
+                  </div>
+                </details>
+              {% else %}
+                <a href="{{ link.url }}">{{ link.title }}</a>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <button type="button" class="icon-button" data-search-open>
+          <span class="visually-hidden">Search</span>
+          🔍
+        </button>
+        <a class="icon-button" href="{{ routes.account_url }}" aria-label="Account">👤</a>
+        <button type="button" class="icon-button" data-cart-open aria-haspopup="dialog">
+          <span class="visually-hidden">Cart</span>
+          🛍
+          <span class="cart-count" data-cart-count>{{ cart.item_count }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <predictive-search class="predictive-search" hidden>
+    <form action="{{ routes.search_url }}" method="get" role="search">
+      <input
+        type="search"
+        name="q"
+        value="{{ search.terms | escape }}"
+        placeholder="Search products"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+      >
+      <div data-predictive-search-results></div>
+    </form>
+  </predictive-search>
+
+  <aside class="cart-drawer" hidden data-cart-drawer>
+    <div class="cart-drawer__inner">
+      <button class="icon-button" data-cart-close>×</button>
+      <h2>Your cart</h2>
+      <div data-cart-lines>
+        {% if cart.item_count == 0 %}
+          <p>Your cart is empty.</p>
+        {% else %}
+          {% for item in cart.items %}
+            <article class="cart-line">
+              <a href="{{ item.url }}">{{ item.product.title }}</a>
+              <p>{{ item.quantity }} × {{ item.final_price | money }}</p>
+            </article>
+          {% endfor %}
+        {% endif %}
+      </div>
+      <a class="button" href="{{ routes.cart_url }}">Checkout</a>
+    </div>
+  </aside>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "section-header",
+  "settings": [
+    { "type": "image_picker", "id": "logo", "label": "Logo" },
+    {
+      "type": "select",
+      "id": "logo_position",
+      "label": "Logo position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    { "type": "checkbox", "id": "enable_sticky", "label": "Enable sticky header", "default": true },
+    { "type": "link_list", "id": "menu", "label": "Navigation menu" },
+    { "type": "checkbox", "id": "show_announcement", "label": "Show announcement", "default": true },
+    { "type": "text", "id": "announcement_text", "label": "Announcement text", "default": "Free shipping over ₹999 • COD available" },
+    { "type": "color", "id": "announcement_bg", "label": "Announcement background", "default": "#111111" },
+    { "type": "color", "id": "announcement_color", "label": "Announcement text color", "default": "#ffffff" }
+  ],
+  "blocks": [
+    {
+      "type": "mega_menu",
+      "name": "Mega menu",
+      "settings": [
+        { "type": "text", "id": "menu_item", "label": "Menu item title" },
+        { "type": "image_picker", "id": "featured_image", "label": "Featured image" },
+        { "type": "url", "id": "featured_link", "label": "Featured link" },
+        { "type": "text", "id": "featured_text", "label": "Featured text", "default": "Shop now" }
+      ]
+    }
+  ]
+}
+{% endschema %}

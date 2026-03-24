@@ -1,0 +1,86 @@
+<section class="main-product" data-section-id="{{ section.id }}">
+  <div class="page-width product-layout">
+    <div class="product-gallery" data-product-gallery>
+      {% for media in product.media %}
+        <figure class="product-gallery__item">
+          {% case media.media_type %}
+            {% when 'image' %}
+              {{ media | image_url: width: 1800 | image_tag: loading: 'lazy', widths: '480,720,960,1200,1600,1800', sizes: '(min-width: 990px) 55vw, 100vw' }}
+            {% when 'video' %}
+              {{ media | media_tag: controls: true, preload: 'metadata' }}
+            {% else %}
+              {{ media | media_tag }}
+          {% endcase %}
+        </figure>
+      {% endfor %}
+    </div>
+
+    <div class="product-info">
+      <p class="product-vendor">{{ product.vendor }}</p>
+      <h1>{{ product.title }}</h1>
+      <div class="product-price">{{ product.selected_or_first_available_variant.price | money }}</div>
+
+      {% render 'product-form', product: product, show_dynamic_checkout: section.settings.show_dynamic_checkout %}
+
+      <div class="trust-row">
+        {% for block in section.blocks %}
+          {% if block.type == 'trust_badge' %}
+            <p>{{ block.settings.label }}</p>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="delivery-estimate" {{ section.shopify_attributes }}>
+        {% if section.settings.show_estimated_delivery %}
+          <p>
+            Estimated delivery:
+            {{ 'now' | date: '%s' | plus: 172800 | date: '%d %b' }} -
+            {{ 'now' | date: '%s' | plus: 432000 | date: '%d %b' }}
+          </p>
+        {% endif %}
+      </div>
+
+      <div class="product-accordion">
+        {% for block in section.blocks %}
+          {% if block.type == 'faq' %}
+            <details>
+              <summary>{{ block.settings.question }}</summary>
+              <div>{{ block.settings.answer }}</div>
+            </details>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="sticky-atc-mobile" data-sticky-atc>
+    <p>{{ product.title }}</p>
+    <button class="button" type="button" data-sticky-atc-trigger>Add to cart • {{ product.selected_or_first_available_variant.price | money }}</button>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Main product",
+  "settings": [
+    { "type": "checkbox", "id": "show_dynamic_checkout", "label": "Show dynamic checkout", "default": true },
+    { "type": "checkbox", "id": "show_estimated_delivery", "label": "Show estimated delivery", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "trust_badge",
+      "name": "Trust badge",
+      "limit": 6,
+      "settings": [{ "type": "text", "id": "label", "label": "Label", "default": "Cash on Delivery Available" }]
+    },
+    {
+      "type": "faq",
+      "name": "FAQ",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question" },
+        { "type": "richtext", "id": "answer", "label": "Answer" }
+      ]
+    }
+  ]
+}
+{% endschema %}
