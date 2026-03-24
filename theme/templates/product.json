@@ -1,0 +1,27 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "cod": {
+          "type": "trust_badge",
+          "settings": { "label": "Cash on Delivery Available" }
+        },
+        "returns": {
+          "type": "trust_badge",
+          "settings": { "label": "7-Day Easy Returns" }
+        },
+        "faq_1": {
+          "type": "faq",
+          "settings": {
+            "question": "When will my order arrive?",
+            "answer": "<p>Most metro cities are delivered within 2-4 days.</p>"
+          }
+        }
+      },
+      "block_order": ["cod", "returns", "faq_1"],
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

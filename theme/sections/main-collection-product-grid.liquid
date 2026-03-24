@@ -1,0 +1,39 @@
+<section class="collection-grid">
+  <div class="page-width">
+    <header class="collection-grid__toolbar">
+      {% if section.settings.enable_filtering %}
+        <button type="button" class="button button--ghost">Filter</button>
+      {% endif %}
+      {% if section.settings.enable_sorting %}
+        <label>
+          <span class="visually-hidden">Sort by</span>
+          <select name="sort_by" id="SortBy" aria-label="Sort by">
+            <option value="manual">Featured</option>
+            <option value="price-ascending">Price, low to high</option>
+            <option value="price-descending">Price, high to low</option>
+            <option value="best-selling">Best selling</option>
+          </select>
+        </label>
+      {% endif %}
+    </header>
+
+    <ul class="product-grid" role="list">
+      {% for product in collection.products limit: section.settings.products_per_page %}
+        <li>{% render 'card-product', product: product %}</li>
+      {% else %}
+        <li>No products found.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collection product grid",
+  "settings": [
+    {"type": "range", "id": "products_per_page", "label": "Products per page", "min": 12, "max": 36, "step": 4, "default": 24},
+    {"type": "checkbox", "id": "enable_filtering", "label": "Enable filtering", "default": true},
+    {"type": "checkbox", "id": "enable_sorting", "label": "Enable sorting", "default": true}
+  ]
+}
+{% endschema %}

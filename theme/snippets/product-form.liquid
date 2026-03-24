@@ -1,0 +1,28 @@
+{% form 'product', product, class: 'product-form', novalidate: 'novalidate' %}
+  {% unless product.has_only_default_variant %}
+    {% for option in product.options_with_values %}
+      <fieldset class="variant-fieldset">
+        <legend>{{ option.name }}</legend>
+        {% for value in option.values %}
+          <label>
+            <input
+              type="radio"
+              name="options[{{ option.name | escape }}]"
+              value="{{ value | escape }}"
+              {% if option.selected_value == value %}checked{% endif %}
+            >
+            <span>{{ value }}</span>
+          </label>
+        {% endfor %}
+      </fieldset>
+    {% endfor %}
+  {% endunless %}
+
+  <button type="submit" name="add" class="button button--primary" {% unless product.available %}disabled{% endunless %}>
+    {% if product.available %}Add to cart{% else %}Sold out{% endif %}
+  </button>
+
+  {% if show_dynamic_checkout %}
+    {{ form | payment_button }}
+  {% endif %}
+{% endform %}

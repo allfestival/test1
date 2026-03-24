@@ -1,0 +1,59 @@
+<footer class="site-footer">
+  <div class="page-width footer-grid">
+    <div>
+      <h2>{{ shop.name }}</h2>
+      <p>{{ section.settings.about_text }}</p>
+      {% if section.settings.show_newsletter %}
+        {% form 'customer', class: 'newsletter-form' %}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <input type="email" name="contact[email]" placeholder="Enter your email" required>
+          <button type="submit" class="button">Subscribe</button>
+        {% endform %}
+      {% endif %}
+    </div>
+
+    {% for block in section.blocks %}
+      {% case block.type %}
+        {% when 'links' %}
+          <div>
+            <h3>{{ block.settings.heading }}</h3>
+            <ul>
+              {% for link in block.settings.menu.links %}
+                <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+      {% endcase %}
+    {% endfor %}
+
+    <div>
+      <h3>Contact</h3>
+      <p>{{ section.settings.contact_email }}</p>
+      <p>{{ section.settings.contact_phone }}</p>
+      <p>{{ section.settings.trust_badges }}</p>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    { "type": "textarea", "id": "about_text", "label": "About text", "default": "Premium products made for modern Indian lifestyles." },
+    { "type": "checkbox", "id": "show_newsletter", "label": "Show newsletter", "default": true },
+    { "type": "text", "id": "contact_email", "label": "Contact email", "default": "care@example.com" },
+    { "type": "text", "id": "contact_phone", "label": "Contact phone", "default": "+91 98765 43210" },
+    { "type": "text", "id": "trust_badges", "label": "Trust badges", "default": "COD • Easy Returns • Secure Payments" }
+  ],
+  "blocks": [
+    {
+      "type": "links",
+      "name": "Quick links",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Quick links" },
+        { "type": "link_list", "id": "menu", "label": "Menu" }
+      ]
+    }
+  ]
+}
+{% endschema %}
